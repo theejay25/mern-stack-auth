@@ -4,12 +4,12 @@ dotenv.config()
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
-  host:'smtp.gmail.com',
-  port:465,
+  host:process.env.HOST,
+  port:process.env.PORT,
   secure:true,
   auth: {
-    user: 'jaytemporary1@gmail.com',
-    pass: 'jwze dcvn yxph tlga'
+    user: process.env.user,
+    pass: process.env.PASSWORD 
   },
   tls: {
     rejectUnauthorized: false // 👈 THIS fixes the self-signed certificate issue
@@ -25,6 +25,7 @@ const sendEmail = async (email, verificationToken) => {
         to: email,
         subject: 'Verify Your Email',
         html: `verify your email address with this token ${verificationToken}`
+
         })
         
         console.log('Email sent successfully');
@@ -38,3 +39,7 @@ const sendEmail = async (email, verificationToken) => {
 }
 
 export default sendEmail
+
+
+
+

@@ -2,6 +2,7 @@ import User from "../models/users.js";
 import bcrypt from 'bcrypt'
 import { generateVerificationToken } from "../utilities/generateverificationToken.js";
 import { generateJWTToken } from "../utilities/generateJWTToken.js";
+import sendEmail from "../email/email.js";
 
 export const signup = async (req, res) => {
 
@@ -30,7 +31,9 @@ export const signup = async (req, res) => {
 
         await newUser.save();
 
-        generateJWTToken(res, User._id)
+        generateJWTToken(res, newUser._id)
+
+        await sendEmail(newUser.email, verificationToken); // Assuming you have a function to send email
 
         return res.status(200).json({
             success: true, 
