@@ -61,7 +61,7 @@ const sendWelcomeEmail = async (email, name) => {
 
 }
 
-export default { sendWelcomeEmail, sendEmail }
+export { sendWelcomeEmail, sendEmail }
 
 
 

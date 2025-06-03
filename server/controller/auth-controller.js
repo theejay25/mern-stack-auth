@@ -2,7 +2,7 @@ import User from "../models/users.js";
 import bcrypt from 'bcrypt'
 import { generateVerificationToken } from "../utilities/generateverificationToken.js";
 import { generateJWTToken } from "../utilities/generateJWTToken.js";
-import sendEmail from "../email/email.js";
+import {sendEmail, sendWelcomeEmail} from "../email/email.js";
 
 export const signup = async (req, res) => {
 
@@ -50,7 +50,34 @@ export const signup = async (req, res) => {
 
 }
 export const login = async (req, res) => {
-    res.send('login route is working');
+    const {email, password} = req.body;
+
+    try {
+        
+        const user = await User.findOne({email})
+
+        if(!user) {
+            return res.status(400).json({success: false, message: 'User with this email does not exist'});
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordCorrect) {
+            return res.status(400).json({success: false, message: 'Incorrect password'});
+        }
+
+        const isVerified = user.isVerified;
+
+        if(!isVerified) {
+            return res.status(400).json({success: false, message: 'Please verify your email first'});
+        }
+
+        generateJWTToken(res, user._id);
+        return res.status(200).json({ success: true, message: 'User logged in successfully'})
+
+    } catch (error) {
+        
+    }
 
 }
 export const logout = async (req, res) => {
@@ -58,7 +85,7 @@ export const logout = async (req, res) => {
 
 }
 export const verifyEmail = async (req, res) => {
-    const { code } = req.query;
+    const { code } = req.body;
     try {
         
         const user = await User.findOne({ 
@@ -75,11 +102,11 @@ export const verifyEmail = async (req, res) => {
         user.verifiedTokenExpiresAT = undefined;
         await user.save();
 
-        await sendWelcomeEmail(user.email, user.name ,'Your email has been verified successfully!'); // Assuming you have a function to send email
+        await sendWelcomeEmail(user.email, user.name); // Assuming you have a function to send email
 
-        return res.status(200).json({success: true, message: 'Email verified successfully', user: { ...user._doc, password: undefined }});
+        return res.status(200).json({success: true, message: 'Email verified successfully', });
 
     } catch (error) {
-        
+        return res.status(500).json({success: false, message: 'Internal server error', error: error.message });
     }
 }
