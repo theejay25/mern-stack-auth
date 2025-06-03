@@ -18,14 +18,14 @@ export const signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const verificationToken = generateVerificationToken(); // Assuming you have a function to generate a token
+        const theVerificationToken = generateVerificationToken(); // Assuming you have a function to generate a token
 
 
         const newUser = new User({
             name, 
             email, 
             password: hashedPassword, 
-            verificationToken: verificationToken , 
+            verificationToken: theVerificationToken, 
             verifiedTokenExpiresAT: Date.now() + 24 * 60 * 60 * 1000 // Token valid for 24 hours
         })
 
@@ -33,13 +33,13 @@ export const signup = async (req, res) => {
 
         generateJWTToken(res, newUser._id)
 
-        await sendEmail(newUser.email, verificationToken); // Assuming you have a function to send email
+        await sendEmail(newUser.email, theVerificationToken); // Assuming you have a function to send email
 
         return res.status(200).json({
             success: true, 
             message: 'User created successfully', 
             user: {
-                userInfo: newUser._doc,
+                 ...newUser._doc,
                 password: undefined
             } });
         
@@ -56,4 +56,30 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     res.send('logout route is working');
 
+}
+export const verifyEmail = async (req, res) => {
+    const { code } = req.query;
+    try {
+        
+        const user = await User.findOne({ 
+            verificationToken: code,
+            verifiedTokenExpiresAT: { $gt: Date.now() }
+        });
+
+        if(!user) {
+            return res.status(400).json({success: false, message: 'Invalid or expired verification token'});
+        }
+
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        user.verifiedTokenExpiresAT = undefined;
+        await user.save();
+
+        await sendWelcomeEmail(user.email, user.name ,'Your email has been verified successfully!'); // Assuming you have a function to send email
+
+        return res.status(200).json({success: true, message: 'Email verified successfully', user: { ...user._doc, password: undefined }});
+
+    } catch (error) {
+        
+    }
 }

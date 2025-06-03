@@ -3,7 +3,6 @@ import cors from 'cors';
 import database from './databases/connectToDatabase.js'
 import dotenv from 'dotenv';
 import authroutes from './routes/auth.js';
-import sendEmail from './email/email.js';
 dotenv.config();
 
 const app = express();
@@ -19,7 +18,6 @@ app.get('/', (req, res) => {
 
 app.listen(5050, () => {
     database()
-    sendEmail('judeokocha06@gmail.com', '1234567')
     console.log('Server is running on http://localhost:5050');
 })
 

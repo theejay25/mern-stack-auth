@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
+import { verificationEmailTemplate, welcomeEmailTemplate } from './email-template.js';
 dotenv.config()
 
 const transporter = nodemailer.createTransport({
@@ -24,7 +25,7 @@ const sendEmail = async (email, verificationToken) => {
         from: 'jaytemporary1@gmail.com',
         to: email,
         subject: 'Verify Your Email',
-        html: `verify your email address with this token ${verificationToken}`
+        html: verificationEmailTemplate.replace('{verificationToken}', verificationToken)
 
         })
         
@@ -38,7 +39,29 @@ const sendEmail = async (email, verificationToken) => {
 
 }
 
-export default sendEmail
+const sendWelcomeEmail = async (email, name) => {
+
+    try {
+
+        await transporter.sendMail({
+        from: 'jaytemporary1@gmail.com',
+        to: email,
+        subject: 'Welcome to Our Services',
+        html: welcomeEmailTemplate.replace('{name}', name)
+
+        })
+        
+        console.log('Email sent successfully');
+
+    } catch (error) {
+
+        console.log('Error sending email:', error);
+
+    }
+
+}
+
+export default { sendWelcomeEmail, sendEmail }
 
 
 
