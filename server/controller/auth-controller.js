@@ -76,12 +76,17 @@ export const login = async (req, res) => {
         return res.status(200).json({ success: true, message: 'User logged in successfully'})
 
     } catch (error) {
-        
+        return res.status(500).json({success: false, message: 'Internal server error', error: error.message });
     }
 
 }
 export const logout = async (req, res) => {
-    res.send('logout route is working');
+    try {
+        res.clearCookie('token'); // Clear the JWT token cookie
+        return res.status(200).json({ success: true, message: 'User logged out successfully' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+    }
 
 }
 export const verifyEmail = async (req, res) => {
