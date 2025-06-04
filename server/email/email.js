@@ -61,7 +61,38 @@ const sendWelcomeEmail = async (email, name) => {
 
 }
 
-export { sendWelcomeEmail, sendEmail }
+
+const sendPasswordResetEmail = async (email, resetURL) => {
+  try {
+    transporter.sendMail({
+      from: 'jaytemporary1@gmail.com',
+      to: email,
+      subject: 'Reset your password',
+      html: `Click <a href='${resetURL}'>Here</a> to reset your password`
+    })
+  } catch (error) {
+    console.log('error sending reset email', email)
+  }
+} 
+
+const sendSuccessfulResetPassword = async (email) => {
+  try {
+    
+    transporter.sendMail({
+      from: 'jaytemporary1@gmail.com',
+      to:email,
+      subject: 'Email reset Successful',
+      text: 'You have succesfully reset your email. You can now log in with your new email'
+    })
+
+  } catch (error) {
+    console.log('error sending a successful email', error)
+    return resizeBy.status(500).json({success: false, messae: 'error sending a successful email'})
+  }
+}
+
+
+export { sendWelcomeEmail, sendEmail, sendPasswordResetEmail, sendSuccessfulResetPassword }
 
 
 
