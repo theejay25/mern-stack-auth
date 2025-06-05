@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import { Route, Routes } from "react-router-dom"
 import SignupPage from "./pages/SignupPage"
 import SigninPage from "./pages/SigninPage"
+import VerifyEmailPage from "./pages/VerifyEmailPage"
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/" element={"Home"} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<SigninPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
       </Routes>
     </>
   )
