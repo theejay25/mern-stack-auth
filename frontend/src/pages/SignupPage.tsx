@@ -1,35 +1,34 @@
 
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import signup from '../assets/img/signup.png'
 import { useState } from 'react'
-import axios from 'axios'
-
+import { useAuthStore } from '../store/authStore'
+import type { AuthStore } from '../store/authStore'
 function SignupPage() {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const navigate = useNavigate() 
+  const { signUp } = useAuthStore() as AuthStore
+
+  // const navigate = useNavigate() 
 
   const handleSubmit = async (e: any) => {
 
     e.preventDefault()
-    try {
-      
-      const poster = await axios.post('http://localhost:5050/api/auth/signup', {name, email, password})
 
-      if(!poster.data.success) {
-        alert('Problem signing up')
-      } else {
-        alert('A verification OTP has been sent to your email')
-        navigate('/verify-email')
-      }
+    console.log(name, email, password)
 
-    } catch (error) {
-      console.log('error in signin', error)
-    }
-
+    
+    await signUp(name, email, password)
+    
+    // if(!poster.data.success) {
+    //   alert('Problem signing up')
+    // } else {
+    //   alert('A verification OTP has been sent to your email')
+    //   navigate('/verify-email')
+    // }
   }
 
 
@@ -50,7 +49,7 @@ function SignupPage() {
                     name="name" 
                     id="username"
                     onChange={(e: any) => setName(e.target.value)} 
-                    className='w-90 bg-[#3c3c3c] mb-3 p-3 text-white text-white outline-none'
+                    className='w-90 bg-[#3c3c3c] mb-3 p-3 text-white outline-none'
                     placeholder='Enter Username'
                     autoComplete='no'
                     required
