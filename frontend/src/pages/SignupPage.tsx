@@ -1,36 +1,31 @@
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import signup from '../assets/img/signup.png'
 import { useState } from 'react'
 import { useAuthStore } from '../store/authStore'
 import type { AuthStore } from '../store/authStore'
 function SignupPage() {
-
+  
+  const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const { signUp } = useAuthStore() as AuthStore
+  const { signUp, isLoading, error, user } = useAuthStore() as AuthStore
 
-  // const navigate = useNavigate() 
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
 
     e.preventDefault()
 
-    console.log(name, email, password)
-
+    console.log(user)
     
     await signUp(name, email, password)
-    
-    // if(!poster.data.success) {
-    //   alert('Problem signing up')
-    // } else {
-    //   alert('A verification OTP has been sent to your email')
-    //   navigate('/verify-email')
-    // }
-  }
 
+    navigate('/verify-email') 
+    
+  }
+  
 
   return (
     <>
@@ -81,10 +76,16 @@ function SignupPage() {
                     required
                     />
                 </div>
-
+                {error ? 
+                  (
+                    <p className='text-red-400'>{error}</p>
+                  ) :
+                  ''
+                }
                 <button 
+                    disabled={isLoading}
                     className='w-full p-3 font-semibold bg-[#f2f2f2] text-black rounded-md cursor-pointer hover:shadow-md hover:shadow-[#edeaea] duration-150'>
-                    Signup
+                    {isLoading ? 'Loading...' : 'Sign Up'}
                 </button>
 
                 <p className='text-white text-center mt-3'>Already have an Account? <Link to={'/login'}>Signin</Link> </p>
